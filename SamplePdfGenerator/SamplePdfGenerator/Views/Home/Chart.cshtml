@@ -1,0 +1,47 @@
+﻿<form id="form1" runat="server">
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script type="text/javascript">
+            google.load("visualization", "1", { packages: ["corechart"] });
+            google.setOnLoadCallback(drawChart);
+            function drawChart() {
+                var options = {
+                    title: 'USA City Distribution'
+                };
+                var json = '[["ShipCity", "TotalOrders"], ["Albuquerque", 18], ["Anchorage", 10], ';
+                json += '["Boise", 31], ["Butte", 3], ["Elgin", 5], ["Eugene", 11], ["Kirkland", 3], ';
+                json += '["Lander", 9], ["Portland", 12], ["San Francisco", 4], ["Seattle", 14], ["Walla Walla", 2]]';
+                var data = google.visualization.arrayToDataTable($.parseJSON(json));
+                var chart = new google.visualization.PieChart($("#chart")[0]);
+                chart.draw(data, options);
+                var image = '<img src="' + chart.getImageURI() + '">';
+                $("[id*=btnExport]").click(function () {
+                    $("input[name=chart_data]").val(chart.getImageURI());
+                });
+            }
+        </script>
+        <div id="chart" style="width: 500px; height: 300px;">
+        </div>
+        <br />
+        <button ID="btnExport" Text="Export" runat="server" OnClick="Export_Click" style="width: 100px; height: 10px;">Export Chart</button>
+    </form>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <img alt="Chart" src="@ViewBag.ChartImageUrl" style="height:300px; width:300px" />
+    <br />
+    @using (Html.BeginForm("Export", "Pdf", FormMethod.Post))
+    {
+        <input type="submit" id="btnSubmit" value="Export" />
+    }
+</body>
+</html>
